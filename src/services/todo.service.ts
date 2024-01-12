@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PrismaClient } from '@prisma/client'
+import Boom from '@hapi/boom'
 const prisma = new PrismaClient()
 
 //POST todos
@@ -14,13 +15,28 @@ export const postTodo = async (body: any) => {
     })
 }
 
-//GET todos by id
+// //GET todos by id
+// export const getTodo = async (id: any) => {
+//     return await prisma.todo.findUnique({
+//         where: {
+//             id: Number(id),
+//         },
+//     })
+// }
+
+// GET todos by id WITH ERROR
 export const getTodo = async (id: any) => {
-    return await prisma.todo.findUnique({
-        where: {
-            id: Number(id),
-        },
-    })
+    try {
+        await prisma.todo.findUniqueOrThrow({
+            where: {
+                id: Number(id),
+            },
+        })
+    } catch (err: any) {
+        {
+            throw Boom.notFound('Post not found')
+        }
+    }
 }
 
 //DELETE  by id
