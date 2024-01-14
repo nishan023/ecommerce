@@ -6,8 +6,12 @@ import { Request, Response, NextFunction } from 'express'
 import * as todoService from '../services/todo.service'
 
 //POST todos
-export const postTodos = (req: Request, res: Response, next: NextFunction) => {
-    const response = todoService.postTodo(req.body)
+export const postTodos = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const response = await todoService.postTodo(req.body)
     res.send(response)
 }
 
@@ -21,7 +25,6 @@ export const getTodosByID = async (
         const response = await todoService.getTodo(req.params.id)
         res.json(response)
     } catch (err) {
-        console.log(err)
         next(err)
     }
 }
@@ -32,8 +35,12 @@ export const deleteTodosByID = async (
     res: Response,
     next: NextFunction
 ) => {
-    const response = await todoService.deleteTodo(req.params.id)
-    res.json(response)
+    try {
+        const response = await todoService.deleteTodo(req.params.id)
+        res.json(response)
+    } catch (err) {
+        next(err)
+    }
 }
 
 //UPDATE by id
@@ -42,6 +49,10 @@ export const updateTodo = async (
     res: Response,
     next: NextFunction
 ) => {
-    const response = await todoService.updateTodo(req.params.id, req.body)
-    res.json(response)
+    try {
+        const response = await todoService.updateTodo(req.params.id, req.body)
+        res.json(response)
+    } catch (err) {
+        next(err)
+    }
 }

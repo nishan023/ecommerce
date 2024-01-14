@@ -23,7 +23,7 @@ app.listen(port, () => {
 
 app.use('/todos', todosRouter)
 
-//Error handeler
+//Error handler
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     const error = buildError(err)

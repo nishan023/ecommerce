@@ -21,7 +21,6 @@ function buildError(err: any) {
             message: err.output.payload.message || err.output.payload.error,
         }
     }
-    console.log('here?')
 
     console.log(err)
 

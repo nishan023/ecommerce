@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { PrismaClient } from '@prisma/client'
@@ -15,47 +16,47 @@ export const postTodo = async (body: any) => {
     })
 }
 
-// //GET todos by id
-// export const getTodo = async (id: any) => {
-//     return await prisma.todo.findUnique({
-//         where: {
-//             id: Number(id),
-//         },
-//     })
-// }
-
 // GET todos by id WITH ERROR
 export const getTodo = async (id: any) => {
     try {
-        await prisma.todo.findUniqueOrThrow({
+        return await prisma.todo.findUniqueOrThrow({
             where: {
                 id: Number(id),
             },
         })
     } catch (err: any) {
-        {
-            throw Boom.notFound('Post not found')
-        }
+        if (err.code === 'P2025') throw Boom.notFound('Post not found ')
+        else throw err
     }
 }
 
 //DELETE  by id
 export const deleteTodo = async (id: any) => {
-    return await prisma.todo.delete({
-        where: {
-            id: Number(id),
-        },
-    })
+    try {
+        return await prisma.todo.delete({
+            where: {
+                id: Number(id),
+            },
+        })
+    } catch (err: any) {
+        if (err.code === 'P2025') throw Boom.notFound('Post not found')
+        else throw err
+    }
 }
 
 //UPDATE by id
 export const updateTodo = async (id: any, body: any) => {
-    const { title, status } = body
-    return await prisma.todo.update({
-        where: { id: Number(id) },
-        data: {
-            title: title,
-            status: status,
-        },
-    })
+    try {
+        const { title, status } = body
+        return await prisma.todo.update({
+            where: { id: Number(id) },
+            data: {
+                title: title,
+                status: status,
+            },
+        })
+    } catch (err: any) {
+        if (err.code === 'P2025') throw Boom.notFound('Post not found')
+        else throw err
+    }
 }
