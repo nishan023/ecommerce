@@ -16,3 +16,16 @@ export const validate =
             next(error)
         }
     }
+
+export const validateByid =
+    (schema: AnyZodObject) =>
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await schema.parseAsync({
+                params: req.params,
+            })
+            return next()
+        } catch (error) {
+            next(error)
+        }
+    }

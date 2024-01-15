@@ -33,6 +33,11 @@ export const getTodo = async (id: any) => {
 //DELETE  by id
 export const deleteTodo = async (id: any) => {
     try {
+        await prisma.todo.findUniqueOrThrow({
+            where: {
+                id: Number(id),
+            },
+        })
         return await prisma.todo.delete({
             where: {
                 id: Number(id),
@@ -46,8 +51,11 @@ export const deleteTodo = async (id: any) => {
 
 //UPDATE by id
 export const updateTodo = async (id: any, body: any) => {
+    const { title, status } = body
     try {
-        const { title, status } = body
+        await prisma.todo.findUniqueOrThrow({
+            where: { id: Number(id) },
+        })
         return await prisma.todo.update({
             where: { id: Number(id) },
             data: {
