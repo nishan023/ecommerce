@@ -4,7 +4,7 @@ import { Router } from 'express'
 import * as todoController from '../controller/todo.controller'
 import { validate } from '../utils/validate'
 import { postTodoDto } from '../validators/post-todo.validator'
-import { putTodoDto } from '../validators/put-todo.validator'
+import { putTodoDto, putTodoDtobody } from '../validators/put-todo.validator'
 import { deleteTodoDto } from '../validators/delete-todo.validator'
 import { getTodoDto } from '../validators/get-todo.validator'
 const router = Router()
@@ -19,6 +19,11 @@ router.get('/:id', validate(getTodoDto), todoController.getTodosByID)
 router.delete('/:id', validate(deleteTodoDto), todoController.deleteTodosByID)
 
 //UPDATE/PUT by id
-router.put('/:id', validate(putTodoDto), todoController.updateTodo)
+router.put(
+    '/:id',
+    validate(putTodoDto),
+    validate(putTodoDtobody),
+    todoController.updateTodo
+)
 
 export default router
