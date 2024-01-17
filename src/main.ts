@@ -11,6 +11,7 @@ import express, {
 } from 'express'
 
 import todosRouter from './routes/todo.router'
+import userRouter from './routes/auth.router'
 import buildError from './utils/build-error'
 const app = express()
 
@@ -22,6 +23,7 @@ app.listen(port, () => {
 })
 
 app.use('/todos', todosRouter)
+app.use('/user', userRouter)
 
 //Error handler
 
