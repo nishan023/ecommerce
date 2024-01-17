@@ -24,6 +24,10 @@ export const loginBodySchema = z.object({
     password: z.string({
         required_error: 'Password is required',
     }),
+    is_admin:z
+    .boolean({
+        required_error:"this is not boolean type"
+    })
 })
 
 export const loginSchema = z.object({

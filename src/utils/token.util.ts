@@ -1,21 +1,22 @@
 import * as jwt from 'jsonwebtoken'
 
-export const createAccessToken = (userId: number, isAdmin: boolean) => {
+
+export const createAccessToken = (userId: number,isAdmin:boolean) => {
     return jwt.sign(
-        { userId, isAdmin },
+        { userId,isAdmin },
         process.env.JWT_ACCESS_TOKEN_SECRET as string,
         {
-            expiresIn: '1d',
+            expiresIn: '5m',
         }
     )
 }
 
-export const createRefreshToken = (userId: number, isAdmin: boolean) => {
+export const createRefreshToken = (userId: number,isAdmin:boolean) => {
     return jwt.sign(
-        { userId, isAdmin },
+        { userId,isAdmin },
         process.env.JWT_REFRESH_TOKEN_SECRET as string,
         {
-            expiresIn: '5m',
+            expiresIn: '1d',
         }
     )
 }
