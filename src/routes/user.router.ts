@@ -3,7 +3,6 @@ import * as UserController from '../controller/user.controller';
 import {
     authenticateToken,
     isAdmin,
-    isUser,
 } from '../middleware/auth.middleware';
 import { validate } from '../utils/validate';
 import {
@@ -29,7 +28,7 @@ router.post(
 );
 
 
-// modify this route to update a user by ID (requires authentication and admin privileges)
+//  route to update a user by ID (requires authentication and admin privileges)
 router.put(
     '/:id',
     validate(updateUserSchema),

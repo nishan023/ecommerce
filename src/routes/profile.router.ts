@@ -15,4 +15,5 @@ router.put(
     validate(updateProfileSchema),
     ProfileController.updateProfile
 )
+router.delete('/',authenticateToken,ProfileController.removeprofile)
 export default router

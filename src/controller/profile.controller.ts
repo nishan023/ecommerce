@@ -27,3 +27,21 @@ export const updateProfile = async (
         next(e)
     }
 }
+
+
+export const removeprofile= async (
+    req: RequestWithUserObject,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = await ProfileService.remove(req.user.userId)
+        const response = {
+            message: 'User deleted successfully',
+            user: user,
+        }
+        return res.status(HttpStatusCode.CREATED).json(response);
+    } catch (e) {
+        next(e)
+    }
+}

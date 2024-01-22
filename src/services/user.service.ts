@@ -5,6 +5,7 @@ import { User } from '@prisma/client'
 import { exclude } from '../utils'
 import { z } from 'zod'
 import { updateUserBodySchema } from '../validators/user.validator'
+import { updateProfileBodySchema } from '../validators/profile.validator'
 
 // Create a new user in the database
 export const create = async (user: User) => {
@@ -50,56 +51,43 @@ export const getById = async (id: number) => {
     }
 }
 
-// Remove a user by ID from the database
-export const remove = async (id: number) => {
+
+
+// Update a user by ID in the database
+export const updateById = async (
+    id: number,
+    user: z.infer<typeof updateProfileBodySchema>
+) => {
     try {
-        await prisma.user.delete({
+        const { addresses, ...rest } = user
+        const updatedUser = await prisma.user.update({
             where: { id },
+            data: rest,
+            include: {
+                addresses: true,
+            },
         })
+
+        return updatedUser
     } catch (err: any) {
-        // Handle user not found
         if (err.code === 'P2025') {
-            throw Boom.notFound(`User with id ${id} does not exist`)
+            throw Boom.badImplementation(
+                `Failed to update user information: ${err.message}`
+            )
         }
         throw err
     }
 }
 
-
-// Update a user by ID in the database
-export const updateById = async (id: number, updatedUserData: Partial<User>) => {
+export const remove = async (id: number) => {
     try {
-        // Retrieve the existing user
-        const existingUser = await prisma.user.findFirst({
+        // Delete the user by ID
+        const deletedUser = await prisma.user.delete({
             where: { id },
-        });
+        })
 
-        // Handle user not found
-        if (!existingUser) {
-            throw Boom.notFound(`User with id ${id} does not exist`);
-        }
-
-        // Update the user data
-        const updatedUser = await prisma.user.update({
-            where: { id },
-            data: updatedUserData,
-            include: {
-                addresses: true,
-            },
-        });
-
-        // Return the updated user (excluding password)
-        return exclude(updatedUser, ['password']);
-    } catch (err: any) {
-        // Handle unique constraint violation (email already exists)
-        if (
-            err.code === 'P2002' &&
-            err.meta?.target &&
-            err.meta?.target[0] === 'email'
-        ) {
-            throw Boom.conflict('User with this email already exists');
-        }
-
-        throw err;
+        return deletedUser
+    } catch (error: any) {
+        throw Boom.badImplementation(`Failed to remove user: ${error.message}`)
     }
-};
+}

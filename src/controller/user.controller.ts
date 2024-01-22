@@ -61,7 +61,11 @@ export const getUserById = async (
 ) => {
     try {
         const user = await UserService.getById(Number(req.params.id))
-        res.status(HttpStatusCode.OK).json(user)
+        const response = {
+            message: 'User deleted successfully',
+            user: user,
+        }
+        res.status(HttpStatusCode.OK).json(response)
     } catch (e) {
         next(e)
     }
@@ -74,8 +78,9 @@ export const updateUserById = async (
     next: NextFunction
 ) => {
     try {
-        const id = Number(req.params.id)
-        const user = await UserService.updateById(id, req.body)
+        const Id = Number(req.params.id)
+        const updatedInfo = req.body;
+        const user = await UserService.updateById(Id, updatedInfo)
         res.status(HttpStatusCode.OK).json(user)
     } catch (e) {
         next(e)

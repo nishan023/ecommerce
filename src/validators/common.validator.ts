@@ -5,7 +5,7 @@ export const userAddressValidator = z
     .object({
         street_number: z.string({
             required_error: 'street_number is required',
-        }),
+        }).optional(),
         address_line1: z.string({
             required_error: 'address_line1 1 is required',
         }),
@@ -14,7 +14,7 @@ export const userAddressValidator = z
         region: z.string({ required_error: 'region is required' }),
         postal_code: z.string({
             required_error: 'postal_code is required',
-        }),
+        }).optional(),
     })
     .array()
     .optional()
