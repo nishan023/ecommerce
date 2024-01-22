@@ -22,14 +22,17 @@ export const updateProfile = async (
 ) => {
     try {
         const user = await ProfileService.update(req.user.userId, req.body)
+        const response = {
+            message: 'User updated successfully',
+            user: user,
+        }
         res.status(HttpStatusCode.CREATED).json(user)
     } catch (e) {
         next(e)
     }
 }
 
-
-export const removeprofile= async (
+export const removeprofile = async (
     req: RequestWithUserObject,
     res: Response,
     next: NextFunction
@@ -40,7 +43,7 @@ export const removeprofile= async (
             message: 'User deleted successfully',
             user: user,
         }
-        return res.status(HttpStatusCode.CREATED).json(response);
+        return res.status(HttpStatusCode.CREATED).json(response)
     } catch (e) {
         next(e)
     }

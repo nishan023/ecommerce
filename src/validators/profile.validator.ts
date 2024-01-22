@@ -7,8 +7,7 @@ export const updateProfileBodySchema = z
             .string({
                 required_error: 'Email is required',
             })
-            .email('Should be a valid email address')
-            .optional(),
+            .email('Should be a valid email address').optional(),
         password: z
             .string({
                 required_error: 'Password is required',

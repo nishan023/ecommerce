@@ -4,9 +4,12 @@ import express, {
     Request,
     Response,
 } from 'express'
-import indexRouter from './routes/index.router'
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
+import indexRouter from './routes/index.router' 
 import buildError from './utils/build-error'
 import {methodNotAllowed }from './middleware/errors.middleware'
+import swaggerJSDoc from 'swagger-jsdoc'
 
 const app = express()
 
@@ -14,6 +17,58 @@ const app = express()
 app.use(express.json())
 
 const port = 3000
+
+
+//swagger
+
+const options: swaggerJsdoc.Options = {
+    definition: {
+        components: {
+            securitySchemes: {
+                BearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                },
+            },
+        },
+        openapi: '3.0.0',
+        info: {
+            title: 'Express starter',
+            version: '1.0.0',
+        },
+
+        servers: [
+            {
+                url: 'http://localhost:3000/api',
+            },
+        ],
+        security: [{ BearerAuth: [] }], // Add security definition here
+    },
+    apis: ['./src/routes/*.ts'],
+}
+
+const specs = swaggerJsdoc(options)
+app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(specs, {
+        explorer: true,
+    })
+)
+/** 
+* @swagger
+* /:
+* get:
+*summary: This api is used to check if get method is working or not
+*description: This api is used to check if get method is working or not
+*responses :
+*200:    
+*description: To test Get method
+*/
+
+
+
+
 
 // Start the server and listen on the specified port
 app.listen(port, () => {
