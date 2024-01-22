@@ -7,7 +7,7 @@
         "start": "nodemon ./src/main.ts",
         "format": "prettier --write .",
         "lint-fix": "eslint --ignore-path .eslintignore . --fix",
-        "deploy-migrate": "npx prisma migrate deploy && npm run stat"
+        "deploy-migrate": "npx prisma migrate deploy && npm run start"
     },
     "author": "",
     "license": "ISC",
