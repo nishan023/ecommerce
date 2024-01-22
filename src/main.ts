@@ -6,6 +6,7 @@ import express, {
 } from 'express'
 import indexRouter from './routes/index.router'
 import buildError from './utils/build-error'
+import {methodNotAllowed }from './middleware/errors.middleware'
 
 const app = express()
 
@@ -21,6 +22,7 @@ app.listen(port, () => {
 
 // Use the router defined in index.router.ts
 app.use(indexRouter)
+app.use(methodNotAllowed)
 
 // Error handler middleware to handle and respond to errors
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
