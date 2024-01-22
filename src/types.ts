@@ -5,7 +5,8 @@ export interface RequestWithUserObject extends Request {
   }
 
   export interface UserJWTPayload {
+      userId: number;
       email: string;
-      password: string;
-      isAdmin: boolean
+      isAdmin: boolean;
+      isUser:boolean;
   }

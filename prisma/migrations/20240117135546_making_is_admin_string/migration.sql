@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "is_admin" DROP DEFAULT,
+ALTER COLUMN "is_admin" SET DATA TYPE TEXT;

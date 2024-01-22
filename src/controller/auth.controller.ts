@@ -1,26 +1,25 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { Request, Response, NextFunction } from 'express'
-import * as  Authservice from '../services/auth.service'
-import {loginBodySchema, signupBodySchema } from '../validators/auth.validator'
+import * as Authservice from '../services/auth.service'
+import { loginBodySchema, signupBodySchema } from '../validators/auth.validator'
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export const registerUser = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    try{
-     const createdUser=await Authservice.signup(
-     signupBodySchema.parse(req.body)
-     )
-     res.json(createdUser)
-    // res.json({message:"user regester successfully"})
-    }catch(err)
-    {
+    try {
+        const createdUser = await Authservice.signup(
+            signupBodySchema.parse(req.body)
+        )
+        const response = {
+            message: 'User registered successfully',
+            user: createdUser,
+        }
+
+        res.json(response)
+    } catch (err) {
         next(err)
-    } 
-   
+    }
 }
 
 export const loginUser = async (
@@ -57,4 +56,3 @@ export const refreshToken = async (
         next(error)
     }
 }
-

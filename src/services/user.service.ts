@@ -1,0 +1,105 @@
+// Import necessary dependencies and modules
+import Boom from '@hapi/boom'
+import prisma from '../libs/prisma'
+import { User } from '@prisma/client'
+import { exclude } from '../utils'
+import { z } from 'zod'
+import { updateUserBodySchema } from '../validators/user.validator'
+
+// Create a new user in the database
+export const create = async (user: User) => {
+    try {
+        return await prisma.user.create({
+            data: user,
+        })
+    } catch (e: any) {
+        // Handle unique constraint violation (email already exists)
+        if (
+            e.code === 'P2002' &&
+            e.meta?.target &&
+            e.meta?.target[0] === 'email'
+        ) {
+            throw Boom.conflict('User with this email already exists')
+        }
+        throw e
+    }
+}
+
+// Retrieve all users from the database (excluding passwords)
+export const get = async () => {
+    const users = await prisma.user.findMany()
+    return users.map((user) => exclude(user, ['password']))
+}
+
+// Retrieve a user by ID from the database (excluding password)
+export const getById = async (id: number) => {
+    try {
+        const user = await prisma.user.findFirstOrThrow({
+            where: { id },
+            include: {
+                addresses: true,
+            },
+        })
+        return exclude(user, ['password'])
+    } catch (err: any) {
+        // Handle user not found
+        if (err.code === 'P2025') {
+            throw Boom.notFound(`User with id ${id} does not exist`)
+        }
+        throw err
+    }
+}
+
+// Remove a user by ID from the database
+export const remove = async (id: number) => {
+    try {
+        await prisma.user.delete({
+            where: { id },
+        })
+    } catch (err: any) {
+        // Handle user not found
+        if (err.code === 'P2025') {
+            throw Boom.notFound(`User with id ${id} does not exist`)
+        }
+        throw err
+    }
+}
+
+
+// Update a user by ID in the database
+export const updateById = async (id: number, updatedUserData: Partial<User>) => {
+    try {
+        // Retrieve the existing user
+        const existingUser = await prisma.user.findFirst({
+            where: { id },
+        });
+
+        // Handle user not found
+        if (!existingUser) {
+            throw Boom.notFound(`User with id ${id} does not exist`);
+        }
+
+        // Update the user data
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data: updatedUserData,
+            include: {
+                addresses: true,
+            },
+        });
+
+        // Return the updated user (excluding password)
+        return exclude(updatedUser, ['password']);
+    } catch (err: any) {
+        // Handle unique constraint violation (email already exists)
+        if (
+            err.code === 'P2002' &&
+            err.meta?.target &&
+            err.meta?.target[0] === 'email'
+        ) {
+            throw Boom.conflict('User with this email already exists');
+        }
+
+        throw err;
+    }
+};

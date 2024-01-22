@@ -1,5 +1,4 @@
 import prisma from '../libs/prisma'
-import * as jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { signupBodySchema } from '../validators/auth.validator'
 import { z } from 'zod'
@@ -10,18 +9,23 @@ import {
     verifyRefreshToken,
 } from '../utils/token.util'
 
+//Handles user signup/regestration
 export const signup = async (user: z.infer<typeof signupBodySchema>) => {
-    const { email, password } = user
+    const { email, password, is_admin } = user
     try {
-      return  await prisma.user.create({
+        // Create a new user in the database
+        return await prisma.user.create({
             data: {
                 email,
                 password: await bcrypt.hash(password, 10),
+                is_admin,
             },
             select: {
                 id: true,
                 email: true,
-                // password: true,
+                is_admin: true,
+                addresses: true,
+                phone_number: true,
             },
         })
     } catch (e: any) {
@@ -30,38 +34,50 @@ export const signup = async (user: z.infer<typeof signupBodySchema>) => {
             e.meta?.target &&
             e.meta?.target[0] === 'email'
         ) {
+            // Handle conflict when a user with the provided email already exists
             throw Boom.conflict('User with this email already exists')
         } else {
+            // Propagate other unexpected errors
             throw e
         }
     }
 }
 
-
+//Handles user login
 export async function login(email: string, password: string) {
+    // Find the user by email in the database
     const user = await prisma.user.findFirst({ where: { email } })
+
     if (!user) {
+        // Throw bad request if user does not exist
         throw Boom.badRequest('Username or password is incorrect.')
     }
 
+    // Compare the provided password with the hashed password in the database
     const passwordMatch = await bcrypt.compare(password, user.password)
 
     if (!passwordMatch) {
+        // Throw bad request if password is incorrect
         throw Boom.badRequest('Username or password is incorrect.')
     }
 
-    const accessToken = createAccessToken(user.id,user.is_admin)
-
-    const refreshToken = createRefreshToken(user.id,user.is_admin)
+    // Generate access and refresh tokens for the authenticated user
+    const accessToken = createAccessToken(user.id, user.is_admin)
+    const refreshToken = createRefreshToken(user.id, user.is_admin)
 
     return { accessToken, refreshToken }
 }
 
+//Handles token refresh.
 export async function refresh(refreshToken: string) {
     try {
+        // Verify the refresh token and extract user information
         const decodedToken: any = verifyRefreshToken(refreshToken)
-        return createAccessToken(decodedToken.userId, decodedToken.isAdmi)
+
+        // Generate a new access token using user information
+        return createAccessToken(decodedToken.userId, decodedToken.isAdmin)
     } catch (error) {
+        // Throw unauthorized error if token verification fails
         throw Boom.unauthorized('User is not logged in')
     }
 }

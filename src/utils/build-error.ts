@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import HttpStatus from 'http-status-codes'
 import { ZodError } from 'zod'
 
 function buildError(err: any) {
-    // Validation errors
+    // Validation errors (ZodError)
     if (err instanceof ZodError) {
         return {
             code: HttpStatus.BAD_REQUEST,
@@ -14,15 +11,13 @@ function buildError(err: any) {
         }
     }
 
-    // HTTP errors
+    // HTTP errors (Boom errors)
     if (err.isBoom) {
         return {
             code: err.output.statusCode,
             message: err.output.payload.message || err.output.payload.error,
         }
     }
-
-    console.log(err)
 
     // Return INTERNAL_SERVER_ERROR for all other cases
     return {
