@@ -16,7 +16,7 @@ const app = express()
 // Middleware to parse incoming JSON requests
 app.use(express.json())
 
-const port = 3000
+const port = process.env.PORT || 3000;
 
 
 //swagger
@@ -55,19 +55,6 @@ app.use(
         explorer: true,
     })
 )
-/** 
-* @swagger
-* /:
-* get:
-*summary: This api is used to check if get method is working or not
-*description: This api is used to check if get method is working or not
-*responses :
-*200:    
-*description: To test Get method
-*/
-
-
-
 
 
 // Start the server and listen on the specified port
